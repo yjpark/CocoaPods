@@ -100,13 +100,13 @@ module Pod
 
         def self.options
           [['--only-errors', 'Lint presents only the errors'],
-           ['--private', 'Lint skips checks that apply only to public repos']].concat(super)
+           ['--no-private', 'Lint includes checks that apply only to public repos']].concat(super)
         end
 
         def initialize(argv)
           @name        = argv.shift_argument
           @only_errors = argv.flag?('only-errors')
-          @private     = argv.flag?('private', false)
+          @private     = argv.flag?('private', true)
           super
         end
 
