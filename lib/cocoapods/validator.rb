@@ -16,15 +16,26 @@ module Pod
     #
     attr_reader :linter
 
+    # @return [Boolean] Whether attributes that affect only public sources
+    #         should be skipped.
+    #
+    attr_reader :private_mode
+    alias_method :private?, :private_mode
+
     # @param  [Specification, Pathname, String] spec_or_path
     #         the Specification or the path of the `podspec` file to lint.
     #
     # @param  [Array<String>] source_urls
     #         the Source URLs to use in creating a {Podfile}.
     #
-    def initialize(spec_or_path, source_urls)
+    # @param  [Boolean] private_mode
+    #         whether attributes that affect only public specifications should
+    #         be skipped. @see #private_mode
+    #
+    def initialize(spec_or_path, source_urls, private_mode = false)
       @source_urls = source_urls
-      @linter = Specification::Linter.new(spec_or_path)
+      @linter = Specification::Linter.new(spec_or_path, private_mode)
+      @private_mode = private_mode
     end
 
     #-------------------------------------------------------------------------#
@@ -245,7 +256,7 @@ module Pod
     # Performs validations related to the `homepage` attribute.
     #
     def validate_homepage(spec)
-      if spec.homepage
+      if spec.homepage && !private?
         validate_url(spec.homepage)
       end
     end
@@ -253,6 +264,7 @@ module Pod
     # Performs validation related to the `screenshots` attribute.
     #
     def validate_screenshots(spec)
+      return if private?
       spec.screenshots.compact.each do |screenshot|
         request = validate_url(screenshot)
         if request && !(request.headers['content-type'] && request.headers['content-type'].first =~ /image\/.*/i)
@@ -264,19 +276,19 @@ module Pod
     # Performs validations related to the `social_media_url` attribute.
     #
     def validate_social_media_url(spec)
-      validate_url(spec.social_media_url) if spec.social_media_url
+      validate_url(spec.social_media_url) if spec.social_media_url && !private?
     end
 
     # Performs validations related to the `documentation_url` attribute.
     #
     def validate_documentation_url(spec)
-      validate_url(spec.documentation_url) if spec.documentation_url
+      validate_url(spec.documentation_url) if spec.documentation_url && !private?
     end
 
     # Performs validations related to the `docset_url` attribute.
     #
     def validate_docset_url(spec)
-      validate_url(spec.docset_url) if spec.docset_url
+      validate_url(spec.docset_url) if spec.docset_url && !private?
     end
 
     def setup_validation_environment

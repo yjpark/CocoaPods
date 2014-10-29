@@ -85,6 +85,14 @@ To install or update CocoaPods see this [guide](http://docs.cocoapods.org/guides
   [Samuel Giddins](https://github.com/segiddins)
   [#2743](https://github.com/CocoaPods/CocoaPods/issues/2743)
 
+* Add a `--private` option to `pod spec lint`, `pod lib lint`, and
+  `pod repo push` that will ignore warnings that only apply to public
+  specifications and sources. In doing so, a 'private' mode was added to the
+  `Validator`.  
+  [Samuel Giddins](https://github.com/segiddins)
+  [Core#190](https://github.com/CocoaPods/Core/issues/190)
+  [#2682](https://github.com/CocoaPods/CocoaPods/issues/2682)
+
 ##### Bug Fixes
 
 * Fixes an issue in the `XCConfigIntegrator` where not all targets that need

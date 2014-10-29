@@ -99,12 +99,14 @@ module Pod
         ]
 
         def self.options
-          [['--only-errors', 'Lint presents only the errors']].concat(super)
+          [['--only-errors', 'Lint presents only the errors'],
+           ['--private', 'Lint skips checks that apply only to public repos']].concat(super)
         end
 
         def initialize(argv)
-          @name = argv.shift_argument
+          @name        = argv.shift_argument
           @only_errors = argv.flag?('only-errors')
+          @private     = argv.flag?('private', false)
           super
         end
 
@@ -123,7 +125,7 @@ module Pod
             SourcesManager.check_version_information(dir)
             UI.puts "\nLinting spec repo `#{dir.realpath.basename}`\n".yellow
 
-            validator = Source::HealthReporter.new(dir)
+            validator = Source::HealthReporter.new(dir, @private)
             validator.pre_check do |_name, _version|
               UI.print '.'
             end
